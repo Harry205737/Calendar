@@ -3,76 +3,85 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#eaf2fa">
 <title>Shift Calendar</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#eaf2fa;font-family:Arial,sans-serif;color:#111}
-header,.toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px;max-width:1100px;margin:auto;gap:10px}
-h1{font-size:25px;text-align:center;flex:1}
+html{scroll-behavior:smooth}
+body{margin:0;background:#eaf2fa;font-family:Arial,sans-serif;color:#111;padding-bottom:100px}
 button,input,select,textarea{font:inherit}
-button{background:white;border:1px solid #aaa;border-radius:8px;padding:9px 12px;cursor:pointer}
+button{background:white;border:1px solid #aaa;border-radius:9px;padding:9px 12px;cursor:pointer}
+button:active{transform:scale(.97)}
 .primary{background:#222;color:white}
-#currentWeather{max-width:1070px;margin:5px auto 12px;background:white;border-radius:12px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-#currentWeather .temp{font-size:30px;font-weight:bold}
-#currentWeather .details{font-size:13px;color:#444}
-.monthbar{display:flex;align-items:center;justify-content:center;gap:12px;flex:1}
-.monthbar strong{font-size:25px}
-.arrow{font-size:23px;border:0;background:transparent}
-#calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:8px;max-width:1100px;margin:auto}
-.weekday{text-align:center;font-weight:bold;padding:8px 0}
-.day{background:white;border:1px solid #999;min-height:125px;padding:6px;display:flex;flex-direction:column;cursor:pointer;overflow:hidden}
-.day.outside{background:#edf2f7;color:#888}
-.day.today{outline:3px solid #2387e8;outline-offset:-3px}
-.day.selected{outline:4px solid #111;outline-offset:-4px}
-.daynum{font-weight:bold}
-.daylabel{font-weight:bold;text-align:center;margin:auto 0 5px;overflow-wrap:anywhere}
-.daynote{font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.weather{font-size:11px;margin-top:5px;font-weight:600}
-.legend{display:flex;gap:8px;flex-wrap:wrap;padding:15px;max-width:1100px;margin:auto}
-.legend span{background:white;padding:6px 9px;border-radius:7px;font-size:12px}
-.swatch{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px}
-.panel{max-width:1100px;margin:10px auto;padding:12px}
-details{background:white;border:1px solid #ccc;border-radius:10px;padding:12px}
-.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
-.field{display:flex;flex-direction:column;gap:5px;margin:12px 0}
-.field input,.field select,.field textarea{padding:9px;border:1px solid #aaa;border-radius:8px;width:100%}
+header{display:flex;align-items:center;justify-content:center;padding:13px 12px}
+h1{font-size:22px;margin:5px}
+#currentWeather{margin:5px 10px 12px;background:white;border-radius:14px;padding:13px 15px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;scroll-margin-top:10px}
+#currentWeather .temp{font-size:32px;font-weight:bold}
+#currentWeather .details{font-size:12px;color:#444;line-height:1.7}
+.muted{font-size:12px;color:#666}
+.month-section{margin:0 0 18px;background:white;scroll-margin-top:0}
+.month-heading{position:sticky;top:0;z-index:5;background:#eaf2fa;padding:12px 10px;font-size:19px;font-weight:bold;border-bottom:1px solid #cbd5e1}
+.weekdays{display:grid;grid-template-columns:repeat(7,1fr);background:#dce8f3}
+.weekday{text-align:center;font-weight:bold;font-size:11px;padding:9px 0}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0}
+.day{min-width:0;min-height:91px;background:white;border:0;border-right:1px solid #d5dce5;border-bottom:1px solid #d5dce5;padding:4px 3px;display:flex;flex-direction:column;cursor:pointer;overflow:hidden;position:relative}
+.day:nth-child(7n){border-right:0}
+.day.outside{background:#f2f5f8;color:#a0a8b1}
+.day.today{box-shadow:inset 0 0 0 2px #2387e8}
+.day.selected{box-shadow:inset 0 0 0 3px #111}
+.daynum{font-size:12px;font-weight:bold;align-self:flex-start}
+.daylabel{font-size:10px;font-weight:bold;text-align:center;margin:auto 0 3px;overflow-wrap:anywhere}
+.daynote{font-size:9px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.weather{font-size:9px;margin-top:3px;font-weight:600;text-align:center;line-height:1.2}
+.legend{display:flex;gap:7px;flex-wrap:wrap;padding:12px;margin:0 5px}
+.legend span{background:white;padding:6px 8px;border-radius:7px;font-size:11px}
+.swatch{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.panel{margin:10px}
+details{background:white;border:1px solid #ccc;border-radius:12px;padding:13px}
+.settings{display:grid;grid-template-columns:1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:5px;margin:10px 0}
+.field input,.field select,.field textarea{padding:11px;border:1px solid #aaa;border-radius:8px;width:100%;background:white}
 textarea{min-height:85px}
 .type-row{display:flex;gap:6px;margin:7px 0}
 .type-row input[type=text]{flex:1;min-width:0}
-.type-row input[type=color]{width:40px}
-dialog{border:0;border-radius:15px;width:min(650px,96%);max-height:92vh;padding:0}
-dialog::backdrop{background:#0009}
-.modalhead{background:#f1f5f9;padding:15px;display:flex;justify-content:space-between}
-.modalbody{padding:16px;overflow:auto;max-height:85vh}
-.weatherbox{background:#edf5fc;border-radius:10px;padding:14px;margin:12px 0;line-height:1.7}
+.type-row input[type=color]{width:42px}
+.inline{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+#bulkBar{background:white;border-radius:10px;margin:10px;padding:12px}
+#bulkBar select{max-width:170px;padding:9px;border-radius:8px}
+dialog{border:0;border-radius:18px 18px 0 0;width:100%;max-width:650px;max-height:90dvh;padding:0;margin:auto 0 0;position:fixed;bottom:0;top:auto}
+dialog::backdrop{background:#0008}
+.modalhead{background:#f1f5f9;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:2}
+.modalhead h2{font-size:18px;margin:5px}
+.modalbody{padding:15px;overflow:auto;max-height:calc(90dvh - 55px);padding-bottom:35px}
+.weatherbox{background:#edf5fc;border-radius:10px;padding:13px;margin:12px 0;line-height:1.7;font-size:14px}
 .hourly{width:100%;border-collapse:collapse;font-size:12px;min-width:490px}
 .hourly th,.hourly td{padding:9px 7px;border-bottom:1px solid #d5dce5;text-align:center;white-space:nowrap}
 .hourly th{background:#e5edf6;position:sticky;top:0}
-.hourlywrap{overflow-x:auto;max-height:340px;overflow-y:auto;background:white;border-radius:8px}
+.hourlywrap{overflow:auto;max-height:300px;background:white;border-radius:8px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.muted{font-size:12px;color:#666}
-.inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-#bulkBar{background:white;border-radius:10px}
-@media(max-width:550px){
- h1{font-size:20px}
- .monthbar{gap:5px}
- .monthbar strong{font-size:19px}
- .day{min-height:105px;padding:4px}
- .daylabel{font-size:11px}
- .daynote,.weather{font-size:9px}
- .weekday{font-size:11px}
- #currentWeather .temp{font-size:25px}
+.actions button{flex:1}
+.bottom-nav{position:fixed;z-index:20;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #cbd5e1;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 5px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -3px 15px #0001}
+.bottom-nav button{border:0;border-radius:10px;background:transparent;padding:7px 2px;font-size:10px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#333}
+.bottom-nav button strong{font-size:19px;line-height:20px}
+.bottom-nav button.active{background:#eaf2fa;color:#1769aa}
+#settingsPanel{scroll-margin-top:15px}
+@media(min-width:700px){
+ body{max-width:1100px;margin:auto}
+ .day{min-height:115px;padding:7px}
+ .daynum{font-size:14px}
+ .daylabel{font-size:12px}
+ .weather{font-size:11px}
+ .daynote{font-size:10px}
+ .settings{grid-template-columns:repeat(2,1fr)}
+ dialog{margin:auto;border-radius:16px}
+ .bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(600px,100%);border:1px solid #ddd;border-bottom:0;border-radius:16px 16px 0 0}
 }
 </style>
 </head>
 <body>
 
-<header>
-<button id="todayBtn">Today</button>
-<h1>Shift Calendar</h1>
-<button id="menuBtn">Menu</button>
-</header>
+<header><h1>Shift Calendar</h1></header>
 
 <div id="currentWeather">
 <div>
@@ -83,40 +92,29 @@ dialog::backdrop{background:#0009}
 <div class="details" id="currentDetails">Loading conditions...</div>
 </div>
 
-<div class="toolbar">
-<div class="monthbar">
-<button class="arrow" id="prev">◀</button>
-<strong id="monthTitle"></strong>
-<button class="arrow" id="next">▶</button>
-</div>
-<button id="editModeBtn">Edit mode</button>
-</div>
-
-<div id="bulkBar" class="panel" hidden>
+<div id="bulkBar" hidden>
 <div class="inline">
-<strong id="selectionCount">0 dates selected</strong>
+<strong id="selectionCount">0 selected</strong>
 <select id="bulkShift"></select>
-<button class="primary" id="applyBulk">Apply shift</button>
-<button id="clearBulk">Clear shifts</button>
+<button class="primary" id="applyBulk">Apply</button>
+<button id="clearBulk">Clear</button>
 <button id="cancelBulk">Done</button>
 </div>
-<p class="muted">Tap dates to select multiple days, then apply a shift.</p>
+<p class="muted">Tap dates to select multiple days.</p>
 </div>
 
 <div id="calendar"></div>
 <div class="legend" id="legend"></div>
 
-<div class="panel">
+<div class="panel" id="settingsPanel">
 <details id="settings">
 <summary>Manage calendar settings</summary>
 <div class="settings">
-
 <div>
 <h3>Shift types</h3>
 <div id="types"></div>
 <button id="addType">+ Add shift type</button>
 </div>
-
 <div>
 <h3>Weather location</h3>
 <div class="field">
@@ -127,7 +125,6 @@ dialog::backdrop{background:#0009}
 <button id="useLocation">Use device location</button>
 <p id="locationStatus" class="muted"></p>
 </div>
-
 <div>
 <h3>Backups</h3>
 <button id="exportBtn">Export backup</button>
@@ -135,10 +132,17 @@ dialog::backdrop{background:#0009}
 <input type="file" id="importFile" accept=".json" hidden>
 <button id="clearBtn">Clear all entries</button>
 </div>
-
 </div>
 </details>
 </div>
+
+<nav class="bottom-nav">
+<button id="navToday" class="active"><strong>⌂</strong>Today</button>
+<button id="navAdd"><strong>＋</strong>Add</button>
+<button id="navEdit"><strong>☑</strong>Edit</button>
+<button id="navWeather"><strong>☀</strong>Weather</button>
+<button id="navSettings"><strong>⚙</strong>Settings</button>
+</nav>
 
 <dialog id="dayDialog">
 <div class="modalhead">
@@ -146,58 +150,29 @@ dialog::backdrop{background:#0009}
 <button id="closeDialog">✕</button>
 </div>
 <div class="modalbody">
-
 <h3>Shift / event</h3>
-<div class="field">
-<select id="shiftSelect"></select>
-</div>
-
+<div class="field"><select id="shiftSelect"></select></div>
 <h3>Notes</h3>
-<div class="field">
-<textarea id="dayNote" placeholder="Add notes, plans or shift information..."></textarea>
-</div>
-
+<div class="field"><textarea id="dayNote" placeholder="Add notes, plans or shift information..."></textarea></div>
 <h3>Daily weather</h3>
 <div class="weatherbox" id="dayWeather">Loading forecast...</div>
-
 <h3>Hourly weather forecast</h3>
-<p class="muted">Temperature, rainfall, rain probability and wind conditions throughout the day.</p>
-
+<p class="muted">Temperature, rainfall, rain probability and wind conditions.</p>
 <div class="hourlywrap">
 <table class="hourly">
-<thead>
-<tr>
-<th>Time</th>
-<th>Temp</th>
-<th>Rain mm</th>
-<th>Rain %</th>
-<th>Wind</th>
-<th>Direction</th>
-</tr>
-</thead>
-<tbody id="hourlyBody">
-<tr><td colspan="6">Loading hourly forecast...</td></tr>
-</tbody>
+<thead><tr><th>Time</th><th>Temp</th><th>Rain mm</th><th>Rain %</th><th>Wind</th><th>Direction</th></tr></thead>
+<tbody id="hourlyBody"><tr><td colspan="6">Loading hourly forecast...</td></tr></tbody>
 </table>
 </div>
-
 <h3>Alarm / reminder</h3>
-<div class="field">
-<label>Alarm time</label>
-<input type="time" id="alarmTime">
-</div>
-<div class="field">
-<label>Reminder</label>
-<input id="alarmText" placeholder="e.g. Leave for work">
-</div>
-
+<div class="field"><label>Alarm time</label><input type="time" id="alarmTime"></div>
+<div class="field"><label>Reminder</label><input id="alarmText" placeholder="e.g. Leave for work"></div>
 <div class="actions">
 <button class="primary" id="saveDay">Save day</button>
 <button id="clearDay">Clear day</button>
 <button id="setAlarm">Set alarm</button>
 </div>
 <p id="alarmStatus" class="muted"></p>
-
 </div>
 </dialog>
 
@@ -205,12 +180,14 @@ dialog::backdrop{background:#0009}
 (()=>{
 const $=id=>document.getElementById(id);
 const today=new Date();
-let view=new Date(today.getFullYear(),today.getMonth(),1);
+const todayKey=key(today);
 let selected='';
 let editMode=false;
 const selectedDates=new Set();
 let weatherCache={};
-let currentWeather=null;
+let monthOffsetStart=-12;
+let monthOffsetEnd=24;
+let rendering=false;
 
 const defaults=[
 {id:'day',name:'DAY',color:'#ff5559',text:'#111'},
@@ -223,7 +200,6 @@ const defaults=[
 let data;
 try{data=JSON.parse(localStorage.getItem('shiftCalendarData'))}
 catch(e){data=null}
-
 if(!data)data={types:defaults,days:{},location:'Melbourne',alarms:{}};
 data.alarms=data.alarms||{};
 data.days=data.days||{};
@@ -231,32 +207,47 @@ data.types=data.types||defaults;
 
 const save=()=>localStorage.setItem('shiftCalendarData',JSON.stringify(data));
 const pad=n=>String(n).padStart(2,'0');
-const key=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+function key(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
 const fromKey=k=>new Date(k+'T12:00:00');
 const typeFor=id=>data.types.find(t=>t.id===id);
+const monthDate=offset=>new Date(today.getFullYear(),today.getMonth()+offset,1);
 
 function esc(s){
-return String(s||'').replace(/[&<>"']/g,c=>({
-'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-}[c]));
+return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function render(){
-$('monthTitle').textContent=view.toLocaleDateString('en-AU',{month:'long',year:'numeric'});
+if(rendering)return;
+rendering=true;
 const cal=$('calendar');
 cal.innerHTML='';
 
+for(let offset=monthOffsetStart;offset<=monthOffsetEnd;offset++){
+const first=monthDate(offset);
+const section=document.createElement('section');
+section.className='month-section';
+section.id='month-'+offset;
+
+const heading=document.createElement('div');
+heading.className='month-heading';
+heading.textContent=first.toLocaleDateString('en-AU',{month:'long',year:'numeric'});
+section.append(heading);
+
+const weekdays=document.createElement('div');
+weekdays.className='weekdays';
 ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(w=>{
 const e=document.createElement('div');
 e.className='weekday';
 e.textContent=w;
-cal.append(e);
+weekdays.append(e);
 });
+section.append(weekdays);
 
-const first=new Date(view.getFullYear(),view.getMonth(),1);
-const offset=(first.getDay()+6)%7;
+const grid=document.createElement('div');
+grid.className='calendar-grid';
+const offsetDay=(first.getDay()+6)%7;
 const start=new Date(first);
-start.setDate(first.getDate()-offset);
+start.setDate(first.getDate()-offsetDay);
 
 for(let i=0;i<42;i++){
 const d=new Date(start);
@@ -264,17 +255,12 @@ d.setDate(start.getDate()+i);
 const k=key(d);
 const entry=data.days[k]||{};
 const t=typeFor(entry.type);
-
 const el=document.createElement('div');
 el.className='day';
-if(d.getMonth()!==view.getMonth())el.classList.add('outside');
-if(k===key(today))el.classList.add('today');
+if(d.getMonth()!==first.getMonth())el.classList.add('outside');
+if(k===todayKey)el.classList.add('today');
 if(selectedDates.has(k))el.classList.add('selected');
-
-if(t){
-el.style.background=t.color;
-el.style.color=t.text||'#111';
-}
+if(t){el.style.background=t.color;el.style.color=t.text||'#111'}
 
 const num=document.createElement('div');
 num.className='daynum';
@@ -287,29 +273,25 @@ label.className='daylabel';
 label.textContent=t.name;
 el.append(label);
 }
-
 if(entry.note){
 const note=document.createElement('div');
 note.className='daynote';
 note.textContent=entry.note;
 el.append(note);
 }
-
 const w=weatherCache[k];
 if(w){
 const weather=document.createElement('div');
 weather.className='weather';
-weather.textContent=`${w.icon} ${w.max}° / ${w.min}°`;
+weather.textContent=`${w.icon} ${w.max}°/${w.min}°`;
 el.append(weather);
 }
-
 if(data.alarms[k]){
 const a=document.createElement('div');
 a.className='daynote';
 a.textContent='⏰ '+data.alarms[k].time;
 el.append(a);
 }
-
 el.onclick=()=>{
 if(editMode){
 if(selectedDates.has(k))selectedDates.delete(k);
@@ -318,10 +300,13 @@ render();
 updateBulk();
 }else openDay(k);
 };
-
-cal.append(el);
+grid.append(el);
+}
+section.append(grid);
+cal.append(section);
 }
 renderLegend();
+rendering=false;
 }
 
 function renderLegend(){
@@ -336,11 +321,8 @@ wrap.innerHTML='';
 data.types.forEach((t,i)=>{
 const row=document.createElement('div');
 row.className='type-row';
-row.innerHTML=`<input type="color" value="${t.color}">
-<input type="text" value="${esc(t.name)}">
-<button>×</button>`;
+row.innerHTML=`<input type="color" value="${t.color}"><input type="text" value="${esc(t.name)}"><button>×</button>`;
 const [color,name,del]=row.children;
-
 color.onchange=()=>{t.color=color.value;save();render()};
 name.onchange=()=>{t.name=name.value.trim()||'SHIFT';save();render()};
 del.onclick=()=>{
@@ -358,28 +340,19 @@ selected=k;
 const d=fromKey(k);
 const e=data.days[k]||{};
 const alarm=data.alarms[k]||{};
-
-$('dialogTitle').textContent=d.toLocaleDateString('en-AU',{
-weekday:'long',day:'numeric',month:'long',year:'numeric'
-});
-
-$('shiftSelect').innerHTML=
-'<option value="">No shift</option>'+
-data.types.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('');
-
+$('dialogTitle').textContent=d.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+$('shiftSelect').innerHTML='<option value="">No shift</option>'+data.types.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('');
 $('shiftSelect').value=e.type||'';
 $('dayNote').value=e.note||'';
 $('alarmTime').value=alarm.time||'';
 $('alarmText').value=alarm.text||'';
 $('alarmStatus').textContent=alarm.time?'Reminder set for '+alarm.time:'';
-
 $('dayDialog').showModal();
 showWeather(k);
 if(!weatherCache[k])loadWeather();
 }
 
 $('closeDialog').onclick=()=>$('dayDialog').close();
-
 $('saveDay').onclick=()=>{
 const type=$('shiftSelect').value;
 const note=$('dayNote').value.trim();
@@ -387,77 +360,63 @@ if(type||note)data.days[selected]={type,note};
 else delete data.days[selected];
 save();render();$('dayDialog').close();
 };
-
 $('clearDay').onclick=()=>{
 delete data.days[selected];
 save();render();
 $('shiftSelect').value='';
 $('dayNote').value='';
 };
-
 $('setAlarm').onclick=()=>{
 const time=$('alarmTime').value;
 const text=$('alarmText').value.trim()||'Calendar reminder';
 if(!time)return alert('Choose an alarm time');
-
 data.alarms[selected]={time,text};
-save();
-scheduleAlarm(selected);
-render();
-
-if('Notification'in window&&Notification.permission==='default'){
-Notification.requestPermission();
-}
+save();scheduleAlarm(selected);render();
+if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
 $('alarmStatus').textContent='Reminder saved for '+time;
 };
 
-$('prev').onclick=()=>{
-view.setMonth(view.getMonth()-1);
-render();loadWeather();
+// Floating navigation
+function scrollToToday(){
+const offset=0;
+const target=$('month-'+offset);
+if(target)target.scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('navToday').onclick=scrollToToday;
+$('navAdd').onclick=()=>openDay(todayKey);
+$('navEdit').onclick=()=>{
+editMode=!editMode;
+selectedDates.clear();
+updateBulk();render();
+$('navEdit').classList.toggle('active',editMode);
 };
-$('next').onclick=()=>{
-view.setMonth(view.getMonth()+1);
-render();loadWeather();
-};
-$('todayBtn').onclick=()=>{
-view=new Date(today.getFullYear(),today.getMonth(),1);
-render();loadWeather();
-};
-$('menuBtn').onclick=()=>{
-$('settings').open=!$('settings').open;
-$('settings').scrollIntoView({behavior:'smooth'});
+$('navWeather').onclick=()=>$('currentWeather').scrollIntoView({behavior:'smooth',block:'start'});
+$('navSettings').onclick=()=>{
+$('settings').open=true;
+$('settingsPanel').scrollIntoView({behavior:'smooth',block:'start'});
 };
 
 $('addType').onclick=()=>{
 const name=prompt('Name this shift type:');
 if(!name?.trim())return;
 const colors=['#8bc7e8','#e6c56c','#86b9a1','#c5a0e8'];
-data.types.push({
-id:'t'+Date.now(),
-name:name.trim().toUpperCase(),
-color:colors[data.types.length%colors.length],
-text:'#111'
-});
+data.types.push({id:'t'+Date.now(),name:name.trim().toUpperCase(),color:colors[data.types.length%colors.length],text:'#111'});
 save();renderTypes();render();updateBulk();
 };
 
 $('location').value=data.location||'Melbourne';
-
 $('saveLocation').onclick=()=>{
 data.location=$('location').value.trim()||'Melbourne';
 delete data.coords;
-weatherCache={};
-save();loadWeather();
+weatherCache={};save();loadWeather();
 };
-
 $('useLocation').onclick=()=>{
 if(!navigator.geolocation)return alert('Location unavailable');
 navigator.geolocation.getCurrentPosition(p=>{
 data.coords={lat:p.coords.latitude,lon:p.coords.longitude};
 data.location='Device location';
 $('location').value=data.location;
-weatherCache={};
-save();loadWeather();
+weatherCache={};save();loadWeather();
 },()=>alert('Could not access location permission'));
 };
 
@@ -468,157 +427,79 @@ a.href=URL.createObjectURL(blob);
 a.download='shift-calendar-backup.json';
 a.click();
 };
-
 $('importBtn').onclick=()=>$('importFile').click();
-
 $('importFile').onchange=async e=>{
 try{
 const obj=JSON.parse(await e.target.files[0].text());
 if(!obj.types||!obj.days)throw Error();
-data=obj;
-data.alarms=data.alarms||{};
+data=obj;data.alarms=data.alarms||{};
 save();renderTypes();render();updateBulk();
 $('location').value=data.location||'Melbourne';
 weatherCache={};loadWeather();
 alert('Backup imported');
 }catch(e){alert('Invalid backup file')}
 };
-
 $('clearBtn').onclick=()=>{
 if(confirm('Clear all shifts, notes and alarms?')){
-data.days={};data.alarms={};
-save();render();
+data.days={};data.alarms={};save();render();
 }
 };
 
-// WEATHER DATA
-
+// Weather
 const codes={
-0:['☀️','Clear'],
-1:['🌤️','Mostly clear'],
-2:['⛅','Partly cloudy'],
-3:['☁️','Overcast'],
-45:['🌫️','Fog'],
-48:['🌫️','Fog'],
-51:['🌦️','Light drizzle'],
-53:['🌦️','Drizzle'],
-55:['🌧️','Heavy drizzle'],
-61:['🌦️','Light rain'],
-63:['🌧️','Rain'],
-65:['🌧️','Heavy rain'],
-71:['🌨️','Snow'],
-73:['🌨️','Snow'],
-75:['❄️','Heavy snow'],
-80:['🌦️','Showers'],
-81:['🌧️','Showers'],
-82:['⛈️','Heavy showers'],
-95:['⛈️','Thunderstorm'],
-96:['⛈️','Hail'],
-99:['⛈️','Heavy hail']
+0:['☀️','Clear'],1:['🌤️','Mostly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],
+45:['🌫️','Fog'],48:['🌫️','Fog'],51:['🌦️','Light drizzle'],53:['🌦️','Drizzle'],
+55:['🌧️','Heavy drizzle'],61:['🌦️','Light rain'],63:['🌧️','Rain'],65:['🌧️','Heavy rain'],
+71:['🌨️','Snow'],73:['🌨️','Snow'],75:['❄️','Heavy snow'],80:['🌦️','Showers'],
+81:['🌧️','Showers'],82:['⛈️','Heavy showers'],95:['⛈️','Thunderstorm'],
+96:['⛈️','Hail'],99:['⛈️','Heavy hail']
 };
-
 function direction(deg){
 if(deg===null||deg===undefined)return '—';
 const directions=['N','NE','E','SE','S','SW','W','NW'];
 return directions[Math.round(deg/45)%8]+' ('+Math.round(deg)+'°)';
 }
-
 async function coordinates(){
 if(data.coords)return data.coords;
 const q=(data.location||'Melbourne').replace(/,\s*Australia$/i,'').trim();
-
 try{
-const r=await fetch(
-'https://geocoding-api.open-meteo.com/v1/search?name='+
-encodeURIComponent(q)+'&count=1&language=en&format=json'
-);
+const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=1&language=en&format=json');
 if(r.ok){
 const j=await r.json();
-if(j.results?.length)return {
-lat:j.results[0].latitude,
-lon:j.results[0].longitude
-};
+if(j.results?.length)return {lat:j.results[0].latitude,lon:j.results[0].longitude};
 }
 }catch(e){}
-
-if(!data.location||/melbourne/i.test(data.location)){
-return {lat:-37.8136,lon:144.9631};
-}
+if(!data.location||/melbourne/i.test(data.location))return {lat:-37.8136,lon:144.9631};
 throw Error('Location not found');
 }
 
 async function loadWeather(){
 $('locationStatus').textContent='Loading weather...';
-
 try{
 const c=await coordinates();
-
 const url=`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&hourly=temperature_2m,precipitation,precipitation_probability,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max&timezone=auto&forecast_days=16`;
-
 const r=await fetch(url);
 if(!r.ok)throw Error('Weather service error '+r.status);
 const j=await r.json();
-
-// Current weather
 const cur=j.current;
 const cw=codes[cur.weather_code]||['🌡️','Weather'];
+$('currentTemp').textContent=Math.round(cur.temperature_2m)+'°C';
+$('currentCondition').textContent=cw[0]+' '+cw[1];
+$('currentDetails').innerHTML=`Feels like ${Math.round(cur.apparent_temperature)}°C<br>Humidity ${cur.relative_humidity_2m}%<br>Wind ${cur.wind_speed_10m} km/h ${direction(cur.wind_direction_10m)}<br>Rain ${cur.precipitation} mm`;
 
-currentWeather={
-temp:Math.round(cur.temperature_2m),
-feels:Math.round(cur.apparent_temperature),
-humidity:cur.relative_humidity_2m,
-wind:cur.wind_speed_10m,
-direction:cur.wind_direction_10m,
-icon:cw[0],
-description:cw[1],
-precip:cur.precipitation
-};
-
-$('currentTemp').textContent=currentWeather.temp+'°C';
-$('currentCondition').textContent=currentWeather.icon+' '+currentWeather.description;
-$('currentDetails').innerHTML=
-`Feels like ${currentWeather.feels}°C<br>
-Humidity ${currentWeather.humidity}%<br>
-Wind ${currentWeather.wind} km/h ${direction(currentWeather.direction)}<br>
-Rain ${currentWeather.precip} mm`;
-
-// Daily and hourly forecasts
 weatherCache={};
-
 j.daily.time.forEach((k,i)=>{
-const code=j.daily.weather_code[i];
-const w=codes[code]||['🌡️','Weather'];
-
-weatherCache[k]={
-icon:w[0],
-description:w[1],
-max:Math.round(j.daily.temperature_2m_max[i]),
-min:Math.round(j.daily.temperature_2m_min[i]),
-rain:j.daily.precipitation_probability_max?.[i]??null,
-rainTotal:j.daily.precipitation_sum?.[i]??null,
-hours:[]
-};
+const w=codes[j.daily.weather_code[i]]||['🌡️','Weather'];
+weatherCache[k]={icon:w[0],description:w[1],max:Math.round(j.daily.temperature_2m_max[i]),min:Math.round(j.daily.temperature_2m_min[i]),rain:j.daily.precipitation_probability_max?.[i]??null,rainTotal:j.daily.precipitation_sum?.[i]??null,hours:[]};
 });
-
 j.hourly.time.forEach((time,i)=>{
 const k=time.slice(0,10);
 if(!weatherCache[k])return;
-
-weatherCache[k].hours.push({
-time:time.slice(11,16),
-temp:j.hourly.temperature_2m[i],
-rain:j.hourly.precipitation[i],
-prob:j.hourly.precipitation_probability[i],
-wind:j.hourly.wind_speed_10m[i],
-direction:j.hourly.wind_direction_10m[i]
+weatherCache[k].hours.push({time:time.slice(11,16),temp:j.hourly.temperature_2m[i],rain:j.hourly.precipitation[i],prob:j.hourly.precipitation_probability[i],wind:j.hourly.wind_speed_10m[i],direction:j.hourly.wind_direction_10m[i]});
 });
-});
-
 $('locationStatus').textContent='Weather updated successfully.';
 render();
-
 if(selected&&$('dayDialog').open)showWeather(selected);
-
 }catch(e){
 $('locationStatus').textContent='Weather error: '+e.message;
 $('currentCondition').textContent='Weather unavailable';
@@ -630,67 +511,29 @@ if(selected&&$('dayDialog').open)showWeather(selected);
 function showWeather(k){
 const w=weatherCache[k];
 const d=fromKey(k);
-
 if(!w){
 const delta=Math.round((d-new Date(new Date().toDateString()))/86400000);
-$('dayWeather').textContent=delta<0?
-'Historical weather forecast unavailable.':
-delta>15?'This date is outside the 16-day forecast window.':
-'Weather data is still loading.';
-
+$('dayWeather').textContent=delta<0?'Historical weather forecast unavailable.':delta>15?'This date is outside the 16-day forecast window.':'Weather data is still loading.';
 $('hourlyBody').innerHTML='<tr><td colspan="6">No hourly forecast available.</td></tr>';
 return;
 }
-
-$('dayWeather').innerHTML=`
-<strong>${w.icon} ${esc(w.description)}</strong><br>
-High: ${w.max}°C · Low: ${w.min}°C<br>
-Total rainfall: ${w.rainTotal??'—'} mm<br>
-Maximum rain probability: ${w.rain??'—'}%<br>
-<span class="muted">${esc(data.location)} · ${d.toLocaleDateString('en-AU')}</span>`;
-
-$('hourlyBody').innerHTML=w.hours.map(h=>`
-<tr>
-<td>${h.time}</td>
-<td>${h.temp===null?'—':Math.round(h.temp)+'°C'}</td>
-<td>${h.rain===null?'—':Number(h.rain).toFixed(1)}</td>
-<td>${h.prob===null?'—':h.prob+'%'}</td>
-<td>${h.wind===null?'—':Math.round(h.wind)+' km/h'}</td>
-<td>${direction(h.direction)}</td>
-</tr>
-`).join('')||'<tr><td colspan="6">No hourly data available.</td></tr>';
+$('dayWeather').innerHTML=`<strong>${w.icon} ${esc(w.description)}</strong><br>High: ${w.max}°C · Low: ${w.min}°C<br>Total rainfall: ${w.rainTotal??'—'} mm<br>Maximum rain probability: ${w.rain??'—'}%<br><span class="muted">${esc(data.location)} · ${d.toLocaleDateString('en-AU')}</span>`;
+$('hourlyBody').innerHTML=w.hours.map(h=>`<tr><td>${h.time}</td><td>${h.temp===null?'—':Math.round(h.temp)+'°C'}</td><td>${h.rain===null?'—':Number(h.rain).toFixed(1)}</td><td>${h.prob===null?'—':h.prob+'%'}</td><td>${h.wind===null?'—':Math.round(h.wind)+' km/h'}</td><td>${direction(h.direction)}</td></tr>`).join('')||'<tr><td colspan="6">No hourly data available.</td></tr>';
 }
 
-// BULK EDIT MODE
-
+// Bulk edit
 function updateBulk(){
 $('bulkBar').hidden=!editMode;
 $('selectionCount').textContent=selectedDates.size+' dates selected';
-$('editModeBtn').textContent=editMode?'Exit edit mode':'Edit mode';
-$('bulkShift').innerHTML=
-'<option value="">Choose shift type...</option>'+
-data.types.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('');
+$('bulkShift').innerHTML='<option value="">Choose shift type...</option>'+data.types.map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('');
 }
-
-$('editModeBtn').onclick=()=>{
-editMode=!editMode;
-selectedDates.clear();
-updateBulk();render();
-};
-
 $('applyBulk').onclick=()=>{
 const type=$('bulkShift').value;
 if(!type)return alert('Choose a shift type first');
 if(!selectedDates.size)return alert('Select dates first');
-
-selectedDates.forEach(k=>{
-const old=data.days[k]||{};
-data.days[k]={...old,type};
-});
-
+selectedDates.forEach(k=>{const old=data.days[k]||{};data.days[k]={...old,type}});
 save();selectedDates.clear();render();updateBulk();
 };
-
 $('clearBulk').onclick=()=>{
 if(!selectedDates.size)return alert('Select dates first');
 selectedDates.forEach(k=>{
@@ -701,41 +544,60 @@ if(!data.days[k].note)delete data.days[k];
 });
 save();selectedDates.clear();render();updateBulk();
 };
-
 $('cancelBulk').onclick=()=>{
-editMode=false;
-selectedDates.clear();
-updateBulk();render();
+editMode=false;selectedDates.clear();updateBulk();render();
+$('navEdit').classList.remove('active');
 };
 
-// ALARMS
+// Infinite scrolling: add more months as you approach either end
+let scrollLock=false;
+window.addEventListener('scroll',()=>{
+if(scrollLock)return;
+const nearBottom=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-900;
+const nearTop=window.scrollY<500;
+if(nearBottom){
+scrollLock=true;
+const old=monthOffsetEnd;
+monthOffsetEnd+=12;
+render();
+scrollLock=false;
+}else if(nearTop&&monthOffsetStart>-120){
+scrollLock=true;
+const oldHeight=document.documentElement.scrollHeight;
+monthOffsetStart-=12;
+render();
+const newHeight=document.documentElement.scrollHeight;
+window.scrollTo(0,window.scrollY+(newHeight-oldHeight));
+scrollLock=false;
+}
+},{passive:true});
 
+// Alarms
 const timers={};
-
 function scheduleAlarm(k){
 clearTimeout(timers[k]);
 const a=data.alarms[k];
 if(!a)return;
-
 const target=new Date(k+'T'+a.time+':00');
 const delay=target.getTime()-Date.now();
 if(delay<=0)return;
-
 timers[k]=setTimeout(()=>{
-if('Notification'in window&&Notification.permission==='granted'){
-new Notification('Shift Calendar',{body:a.text});
-}else{
-alert('Reminder: '+a.text);
-}
+if('Notification'in window&&Notification.permission==='granted')new Notification('Shift Calendar',{body:a.text});
+else alert('Reminder: '+a.text);
 },delay);
 }
-
 Object.keys(data.alarms).forEach(scheduleAlarm);
 
 renderTypes();
 render();
 updateBulk();
 loadWeather();
+
+// Position the current month at the top on initial load
+setTimeout(()=>{
+const current=$('month-0');
+if(current)current.scrollIntoView({block:'start'});
+},100);
 
 })();
 </script>
