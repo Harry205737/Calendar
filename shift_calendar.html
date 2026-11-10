@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#eaf3fb">
+<title>Shift Calendar</title>
+<style>
+:root{--line:#888;--ink:#111;--muted:#777;--paper:#f7f9fc;--blue:#5357f5}
+*{box-sizing:border-box}body{margin:0;background:#eaf2fa;color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:18px 16px 10px;max-width:1100px;margin:auto}
+h1{font-size:clamp(23px,4vw,32px);margin:0;text-align:center;flex:1}.toolbar{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:10px auto;padding:0 16px;gap:10px}
+button,select,input,textarea{font:inherit}button{border:1px solid #aab4c0;border-radius:10px;background:#fff;padding:9px 13px;cursor:pointer;color:#111}button:active{transform:translateY(1px)}button.primary{background:#202b3a;color:white;border-color:#202b3a}button.small{padding:6px 9px;font-size:14px}
+.monthbar{display:flex;align-items:center;justify-content:center;gap:22px;flex:1}.monthbar strong{font-size:clamp(22px,4vw,34px);min-width:220px;text-align:center}.arrow{font-size:28px;border:0;background:transparent;padding:0 6px}
+#calendar{max-width:1100px;margin:0 auto 22px;padding:0 8px;display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.weekday{text-align:center;font-weight:650;font-size:clamp(12px,2.2vw,18px);padding:6px 0}
+.day{background:#fff;border:1px solid #999;min-height:clamp(105px,17vw,165px);padding:7px 6px;display:flex;flex-direction:column;gap:4px;cursor:pointer;position:relative;overflow:hidden}
+.day.outside{background:#edf2f7;color:#8a929c}.day.today{outline:3px solid #2387e8;outline-offset:-3px}.daynum{font-size:clamp(14px,2.3vw,20px);font-weight:600}.daylabel{margin:auto 0 7px;text-align:center;font-size:clamp(12px,2.2vw,20px);font-weight:700;overflow-wrap:anywhere}.daynote{font-size:11px;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.weather{font-size:11px;color:#28384b;margin-top:2px}.dots{display:flex;gap:3px;flex-wrap:wrap}.dot{width:7px;height:7px;border-radius:50%}
+.legend{max-width:1100px;margin:0 auto 20px;padding:0 16px;display:flex;gap:8px;flex-wrap:wrap}.legend span{display:inline-flex;align-items:center;gap:5px;background:#fff;padding:5px 8px;border-radius:7px;font-size:12px}.swatch{width:11px;height:11px;border-radius:3px;display:inline-block}
+.panel{max-width:1100px;margin:0 auto 24px;padding:0 16px}.panel details{background:#fff;border:1px solid #c6ced8;border-radius:12px;padding:12px}.panel summary{font-weight:700;cursor:pointer}.settings-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:12px}.type-row{display:flex;align-items:center;gap:7px;margin:7px 0}.type-row input[type=text]{min-width:0;flex:1}.type-row input[type=color]{width:40px;height:35px;padding:2px}.field{display:flex;flex-direction:column;gap:5px;margin:10px 0}.field input,.field select,.field textarea,.type-row input[type=text]{border:1px solid #aeb8c4;border-radius:8px;padding:9px;background:#fff;width:100%}.field textarea{min-height:85px;resize:vertical}.muted{color:#697586;font-size:13px}
+dialog{border:0;border-radius:16px;padding:0;width:min(560px,calc(100% - 24px));max-height:90vh;box-shadow:0 18px 60px #17253655}dialog::backdrop{background:#101a2a88}.modalhead{padding:16px 18px;background:#f1f5f9;display:flex;justify-content:space-between;align-items:center;gap:10px}.modalhead h2{margin:0;font-size:21px}.modalbody{padding:16px 18px;overflow:auto;max-height:calc(90vh - 75px)}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.weatherbox{background:#f0f6fc;padding:12px;border-radius:10px;margin:10px 0}.inline{display:flex;gap:8px;align-items:center}.inline>*{flex:1;min-width:0}
+@media(max-width:560px){header{padding-top:12px}.toolbar{padding:0 8px}.day{min-height:105px;padding:5px 3px}.daylabel{font-size:11px}.weather{font-size:9px}.daynote{font-size:9px}.monthbar{gap:8px}.monthbar strong{min-width:0}.weekday{font-size:11px}}
+</style>
+</head>
+<body>
+<header><button id="todayBtn" class="small">Today</button><h1>Shift Calendar</h1><button id="menuBtn">Menu</button></header>
+<div class="toolbar"><div class="monthbar"><button class="arrow" id="prev" aria-label="Previous month">◀</button><strong id="monthTitle"></strong><button class="arrow" id="next" aria-label="Next month">▶</button></div></div>
+<div id="calendar" aria-label="Calendar"></div>
+<div class="legend" id="legend"></div>
+<section class="panel">
+<details id="settings">
+<summary>Manage shift types & calendar settings</summary>
+<div class="settings-grid">
+<div><h3>Shift types</h3><div id="types"></div><button id="addType" class="small">＋ Add shift type</button></div>
+<div><h3>Weather location</h3><p class="muted">Weather is fetched from Open-Meteo when the calendar is opened. Choose a location or use your device location.</p><div class="field"><label for="location">Town / suburb</label><input id="location" placeholder="e.g. Melbourne"></div><div class="actions"><button id="saveLocation" class="small">Save location</button><button id="useLocation" class="small">Use device location</button></div><p class="muted" id="locationStatus"></p></div>
+<div><h3>Data</h3><p class="muted">Your shifts, notes and settings are saved in this browser on this device.</p><div class="actions"><button id="exportBtn" class="small">Export backup</button><button id="importBtn" class="small">Import backup</button><input id="importFile" type="file" accept="application/json" hidden></div><button id="clearBtn" class="small">Clear all calendar entries</button></div>
+</div>
+</details>
+</section>
+<dialog id="dayDialog"><div class="modalhead"><h2 id="dialogTitle">Day details</h2><button id="closeDialog" class="small">✕</button></div><div class="modalbody">
+<div class="field"><label for="shiftSelect">Shift / event</label><select id="shiftSelect"></select></div>
+<div class="field"><label for="dayNote">Notes</label><textarea id="dayNote" placeholder="Add shift details, plans, reminders..."></textarea></div>
+<div class="weatherbox" id="dayWeather">Weather forecast will appear here when available.</div>
+<h3>Alarm / reminder</h3>
+<p class="muted">Set a reminder for this date. Notifications work while this page is open; browser/device settings may restrict them.</p>
+<div class="inline"><div class="field"><label for="alarmTime">Time</label><input id="alarmTime" type="time"></div><div class="field"><label for="alarmText">Reminder</label><input id="alarmText" placeholder="e.g. Leave for work"></div></div>
+<div class="actions"><button id="saveDay" class="primary">Save day</button><button id="clearDay">Clear day</button><button id="setAlarm">Set alarm</button></div>
+<p class="muted" id="alarmStatus"></p>
+</div></dialog>
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const today=new Date(); let view=new Date(today.getFullYear(),today.getMonth(),1), selected='';
+const defaultTypes=[
+ {id:'day',name:'DAY',color:'#ff5559',text:'#111'},
+ {id:'night',name:'NIGHT',color:'#5555f5',text:'#fff'},
+ {id:'autobarn',name:'AUTOBARN',color:'#398b08',text:'#fff'},
+ {id:'tafe',name:'TAFE',color:'#ffad55',text:'#111'},
+ {id:'camping',name:'CAMPING',color:'#e99ce9',text:'#111'}
+];
+let data=JSON.parse(localStorage.getItem('shiftCalendarData')||'null')||{types:defaultTypes,days:{},location:'Melbourne, Australia',alarms:{}};
+let weatherCache={};
+const save=()=>localStorage.setItem('shiftCalendarData',JSON.stringify(data));
+const pad=n=>String(n).padStart(2,'0');
+const keyDate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const dateFrom=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
+const typeFor=id=>data.types.find(t=>t.id===id);
+const escapeHtml=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function render(){
+ $('monthTitle').textContent=view.toLocaleDateString('en-AU',{month:'long',year:'numeric'});
+ const cal=$('calendar');cal.innerHTML='';
+ ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].forEach(w=>{const el=document.createElement('div');el.className='weekday';el.textContent=w;cal.append(el)});
+ const first=new Date(view.getFullYear(),view.getMonth(),1), offset=(first.getDay()+6)%7;
+ const start=new Date(first);start.setDate(first.getDate()-offset);
+ for(let i=0;i<42;i++){
+  const d=new Date(start);d.setDate(start.getDate()+i);const k=keyDate(d),entry=data.days[k]||{},t=typeFor(entry.type);
+  const el=document.createElement('div');el.className='day'+(d.getMonth()!==view.getMonth()?' outside':'')+(k===keyDate(today)?' today':'');
+  if(t){el.style.background=t.color;el.style.color=t.text||'#111'}
+  const num=document.createElement('div');num.className='daynum';num.textContent=d.getDate();el.append(num);
+  if(t){const lab=document.createElement('div');lab.className='daylabel';lab.textContent=t.name;el.append(lab)}
+  if(entry.note){const note=document.createElement('div');note.className='daynote';note.textContent=entry.note;el.append(note)}
+  if(weatherCache[k]){const w=document.createElement('div');w.className='weather';w.textContent=weatherCache[k].icon+' '+weatherCache[k].max+'°/'+weatherCache[k].min+'°';el.append(w)}
+  if(data.alarms[k]){const a=document.createElement('div');a.className='daynote';a.textContent='⏰ '+data.alarms[k].time;el.append(a)}
+  el.addEventListener('click',()=>openDay(k));cal.append(el);
+ }
+ renderLegend();
+}
+function renderLegend(){const l=$('legend');l.innerHTML='';data.types.forEach(t=>{const s=document.createElement('span');s.innerHTML=`<i class="swatch" style="background:${t.color}"></i>${escapeHtml(t.name)}`;l.append(s)})}
+function renderTypes(){
+ const wrap=$('types');wrap.innerHTML='';
+ data.types.forEach((t,i)=>{const row=document.createElement('div');row.className='type-row';row.innerHTML=`<input type="color" aria-label="Colour for ${escapeHtml(t.name)}" value="${t.color}"><input type="text" aria-label="Shift name" value="${escapeHtml(t.name)}" maxlength="20"><button class="small" title="Remove">×</button>`;
+ const [color,name,del]=row.children;color.addEventListener('input',()=>{t.color=color.value;save();render()});name.addEventListener('change',()=>{t.name=name.value.trim()||'SHIFT';save();render()});del.addEventListener('click',()=>{if(!confirm(`Remove ${t.name}? Existing days using it will become unassigned.`))return;Object.values(data.days).forEach(e=>{if(e.type===t.id)e.type=''});data.types.splice(i,1);save();renderTypes();render()});wrap.append(row)});
+}
+function openDay(k){
+ selected=k;const d=dateFrom(k),e=data.days[k]||{},alarm=data.alarms[k]||{};
+ $('dialogTitle').textContent=d.toLocaleDateString('en-AU',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ $('shiftSelect').innerHTML='<option value="">No shift / clear</option>'+data.types.map(t=>`<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+ $('shiftSelect').value=e.type||'';$('dayNote').value=e.note||'';
+ $('alarmTime').value=alarm.time||'';$('alarmText').value=alarm.text||'';$('alarmStatus').textContent=alarm.time?`Reminder set for ${alarm.time}`:'';
+ const w=weatherCache[k];$('dayWeather').innerHTML=w?`<strong>${w.icon} ${escapeHtml(w.description)}</strong><br>High ${w.max}°C · Low ${w.min}°C · Rain chance ${w.rain??'—'}%<br><span class="muted">${escapeHtml(data.location||'Weather location not set')}</span>`:'Weather forecast unavailable for this date yet. Forecasts are generally limited to the next 16 days.';
+ $('dayDialog').showModal();fetchWeatherForDate(k);
+}
+function close(){ $('dayDialog').close() }
+$('closeDialog').onclick=close;
+$('saveDay').onclick=()=>{const type=$('shiftSelect').value,note=$('dayNote').value.trim();if(type||note)data.days[selected]={type,note};else delete data.days[selected];save();render();close()};
+$('clearDay').onclick=()=>{delete data.days[selected];save();render();$('shiftSelect').value='';$('dayNote').value='';};
+$('setAlarm').onclick=()=>{
+ const time=$('alarmTime').value,text=$('alarmText').value.trim()||'Calendar reminder';
+ if(!time){$('alarmStatus').textContent='Choose a time first.';return}
+ data.alarms[selected]={time,text};save();scheduleAlarm(selected);render();
+ if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+ $('alarmStatus').textContent=`Reminder saved for ${time}. Keep this page open for the alarm to fire.`;
+};
+$('prev').onclick=()=>{view.setMonth(view.getMonth()-1);render();loadWeather()};
+$('next').onclick=()=>{view.setMonth(view.getMonth()+1);render();loadWeather()};
+$('todayBtn').onclick=()=>{view=new Date(today.getFullYear(),today.getMonth(),1);render();loadWeather()};
+$('menuBtn').onclick=()=>{$('settings').open=!$('settings').open;$('settings').scrollIntoView({behavior:'smooth',block:'nearest'})};
+$('addType').onclick=()=>{const name=prompt('Name this shift type (e.g. EARLY, LATE, RDO):');if(!name?.trim())return;const colors=['#8bc7e8','#e6c56c','#86b9a1','#c5a0e8'];data.types.push({id:'t'+Date.now(),name:name.trim().toUpperCase(),color:colors[data.types.length%colors.length],text:'#111'});save();renderTypes();render()};
+$('saveLocation').onclick=()=>{data.location=$('location').value.trim()||'Melbourne, Australia';save();weatherCache={};$('locationStatus').textContent='Location saved. Refreshing forecast…';loadWeather()};
+$('location').value=data.location||'Melbourne, Australia';
+$('useLocation').onclick=()=>{if(!navigator.geolocation){$('locationStatus').textContent='Location is not supported by this browser.';return}navigator.geolocation.getCurrentPosition(async p=>{data.coords={lat:p.coords.latitude,lon:p.coords.longitude};data.location='Device location';save();weatherCache={};$('locationStatus').textContent='Using device location.';loadWeather()},()=>{$('locationStatus').textContent='Could not access location. Check browser permission.'})};
+$('exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='shift-calendar-backup.json';a.click();URL.revokeObjectURL(a.href)};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{try{const obj=JSON.parse(await e.target.files[0].text());if(!obj.types||!obj.days)throw Error();data=obj;save();renderTypes();render();$('location').value=data.location||'';loadWeather();alert('Backup imported.')}catch{alert('That file is not a valid calendar backup.')}};
+$('clearBtn').onclick=()=>{if(confirm('Remove all saved shifts, notes and alarms? Shift types will be kept.')){data.days={};data.alarms={};save();render()}};
+async function getCoordinates(){
+ if(data.coords)return data.coords;
+ const q=data.location||'Melbourne, Australia';
+ const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=1&language=en&format=json');
+ const j=await r.json();if(!j.results?.length)throw Error('Location not found');return {lat:j.results[0].latitude,lon:j.results[0].longitude};
+}
+const weatherCodes={0:['☀️','Clear'],1:['🌤️','Mostly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],48:['🌫️','Rime fog'],51:['🌦️','Light drizzle'],53:['🌦️','Drizzle'],55:['🌧️','Heavy drizzle'],61:['🌦️','Light rain'],63:['🌧️','Rain'],65:['🌧️','Heavy rain'],71:['🌨️','Light snow'],73:['🌨️','Snow'],75:['❄️','Heavy snow'],80:['🌦️','Showers'],81:['🌧️','Showers'],82:['⛈️','Heavy showers'],95:['⛈️','Thunderstorm'],96:['⛈️','Hail'],99:['⛈️','Heavy hail']};
+async function loadWeather(){
+ try{const c=await getCoordinates();const start=keyDate(new Date(view.getFullYear(),view.getMonth(),1)),end=keyDate(new Date(view.getFullYear(),view.getMonth()+1,0));
+ const url=`https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&start_date=${start}&end_date=${end}`;
+ const r=await fetch(url);if(!r.ok)throw Error();const j=await r.json();if(j.daily?.time)j.daily.time.forEach((k,i)=>{const code=j.daily.weather_code[i],w=weatherCodes[code]||['🌡️','Weather'];weatherCache[k]={icon:w[0],description:w[1],max:Math.round(j.daily.temperature_2m_max[i]),min:Math.round(j.daily.temperature_2m_min[i]),rain:j.daily.precipitation_probability_max?.[i]??null}});
+ render();if(selected&&$('dayDialog').open)openWeatherOnly(selected);
+ }catch(e){$('locationStatus').textContent='Weather could not be loaded. Check the location and internet connection.'}
+}
+function openWeatherOnly(k){const w=weatherCache[k];if(w)$('dayWeather').innerHTML=`<strong>${w.icon} ${escapeHtml(w.description)}</strong><br>High ${w.max}°C · Low ${w.min}°C · Rain chance ${w.rain??'—'}%<br><span class="muted">${escapeHtml(data.location||'Device location')}</span>`}
+async function fetchWeatherForDate(k){if(weatherCache[k]){openWeatherOnly(k);return}await loadWeather();openWeatherOnly(k)}
+const alarmTimers={};
+function scheduleAlarm(k){clearTimeout(alarmTimers[k]);const a=data.alarms[k];if(!a)return;const target=new Date(k+'T'+a.time+':00');const delay=target.getTime()-Date.now();if(delay<=0)return;alarmTimers[k]=setTimeout(()=>{if('Notification'in window&&Notification.permission==='granted')new Notification('Shift Calendar',{body:a.text});else alert('Reminder: '+a.text)},delay)}
+function scheduleAll(){Object.keys(data.alarms).forEach(scheduleAlarm)}
+if('Notification'in window&&Notification.permission==='default'){} // Permission is requested only when the user sets an alarm.
+renderTypes();render();loadWeather();scheduleAll();
+})();
+</script>
+</body>
+</html>
